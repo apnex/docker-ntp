@@ -1,16 +1,16 @@
-FROM alpine:latest
+FROM centos:latest
 
 # install openntp
-RUN apk add --no-cache openntpd
+RUN yum -y install ntp
 
 # use custom ntpd config file
-COPY lib/ntpd.conf /etc/ntpd.conf
+COPY lib/ntp.conf /etc/ntp.conf
 
 # ntp port
 EXPOSE 123/udp
 
 # let docker know how to test container health
-HEALTHCHECK CMD ntpctl -s status || exit 1
+HEALTHCHECK CMD ntpq -p || exit 1
 
 # start ntpd in the foreground
-ENTRYPOINT [ "/usr/sbin/ntpd", "-v", "-d", "-s" ]
+ENTRYPOINT [ "/usr/sbin/ntpd", "-4", "-n" ]
